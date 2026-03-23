@@ -9,6 +9,11 @@ import { useMasterPassword } from "@/components/vault/master-password-context";
 
 export function VaultUnlockScreen() {
   const { unlock } = useMasterPassword();
+  const [masterFieldName] = useState(() => {
+    // Randomize the input name so password managers don't consistently recognize
+    // this as a savable login credential.
+    return `vault-master-${crypto.randomUUID()}`;
+  });
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -37,13 +42,18 @@ export function VaultUnlockScreen() {
             never sent to the server.
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          autoComplete="off"
+        >
           <div className="space-y-2">
             <Label htmlFor="vault-master">Master password</Label>
             <Input
               id="vault-master"
               type="password"
-              autoComplete="off"
+              name={masterFieldName}
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter master password"
