@@ -137,7 +137,11 @@ export function VaultDashboard({ mode = "all" }: Props) {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return rows;
-    return rows.filter((r) => r.site_name.toLowerCase().includes(q));
+    return rows.filter((r) => {
+      const site = r.site_name.toLowerCase();
+      const username = r.username.toLowerCase();
+      return site.includes(q) || username.includes(q);
+    });
   }, [rows, search]);
 
   function resetAddForm() {
@@ -364,11 +368,11 @@ export function VaultDashboard({ mode = "all" }: Props) {
           />
           <Input
             type="search"
-            placeholder="Search by site name…"
+            placeholder="Search by site, username, or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full border-slate-300/80 bg-white/95 pl-10 text-base dark:border-slate-700 dark:bg-slate-900/90"
-            aria-label="Filter by site name"
+            aria-label="Filter by site, username, or email"
           />
         </div>
 

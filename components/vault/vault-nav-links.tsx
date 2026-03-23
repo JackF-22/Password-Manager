@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { KeyRound, Star, Trash2 } from "lucide-react";
+import { KeyRound, Sparkles, Star, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/vault", label: "All Passwords", icon: KeyRound },
+  { href: "/vault/generate", label: "Generate", icon: Sparkles },
   { href: "/vault/favorites", label: "Favorites", icon: Star },
   { href: "/vault/trash", label: "Trash", icon: Trash2 },
 ] as const;
