@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase";
@@ -185,6 +186,14 @@ export function LoginForm() {
                 {loading ? "Signing in…" : "Sign in"}
               </Button>
             </form>
+            <div className="flex items-center justify-end">
+              <Link
+                href="/reset-password"
+                className="text-sm text-cyan-300/90 hover:text-cyan-200 underline underline-offset-4"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </TabsContent>
           <TabsContent value="signup" className="mt-5 space-y-4 outline-none">
             <form onSubmit={signUp} className="space-y-4">

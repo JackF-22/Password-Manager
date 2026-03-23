@@ -1,12 +1,14 @@
 "use client";
 
-import { Lock, LogOut, Shield } from "lucide-react";
+import { KeyRound, Lock, LogOut, Shield } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { VaultNavLinks } from "@/components/vault/vault-nav-links";
 import { useLockVault } from "@/hooks/use-lock-vault";
 import { useSignOutVault } from "@/hooks/use-sign-out-vault";
 
 export function AppSidebar() {
+  const router = useRouter();
   const lockVault = useLockVault();
   const signOutVault = useSignOutVault();
 
@@ -41,6 +43,15 @@ export function AppSidebar() {
         >
           <LogOut className="size-5 shrink-0" aria-hidden />
           Sign out
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 w-full justify-start gap-2 text-base text-slate-600 hover:bg-slate-300/50 dark:text-slate-400 dark:hover:bg-slate-800/80"
+          onClick={() => router.push("/change-password")}
+        >
+          <KeyRound className="size-5 shrink-0" aria-hidden />
+          Change password
         </Button>
       </div>
     </aside>

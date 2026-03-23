@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +9,13 @@ import { useMasterPassword } from "@/components/vault/master-password-context";
 
 export function VaultUnlockScreen() {
   const { unlock } = useMasterPassword();
-  const [masterFieldName] = useState(() => {
-    // Randomize the input name so password managers don't consistently recognize
-    // this as a savable login credential.
-    return `vault-master-${crypto.randomUUID()}`;
-  });
+  const [masterFieldName, setMasterFieldName] = useState("vault-master");
+  useEffect(() => {
+    // Randomize after mount so the server-rendered HTML matches the hydrated HTML.
+    // This avoids React hydration mismatch warnings while still making the field
+    // name unstable for browser password managers.
+    setMasterFieldName(`vault-master-${crypto.randomUUID()}`);
+  }, []);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 

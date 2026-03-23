@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { KeyRound, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -12,8 +12,10 @@ import {
 import { VaultNavLinks } from "@/components/vault/vault-nav-links";
 import { useLockVault } from "@/hooks/use-lock-vault";
 import { useSignOutVault } from "@/hooks/use-sign-out-vault";
+import { useRouter } from "next/navigation";
 
 export function VaultMobileNav() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const lockVault = useLockVault();
   const signOutVault = useSignOutVault();
@@ -71,6 +73,18 @@ export function VaultMobileNav() {
               onClick={() => handleLock()}
             >
               Lock vault
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-11 w-full justify-start gap-2 text-base text-slate-600 hover:bg-slate-300/50 dark:text-slate-400 dark:hover:bg-slate-800/80"
+              onClick={() => {
+                setOpen(false);
+                router.push("/change-password");
+              }}
+            >
+              <KeyRound className="size-5 shrink-0" aria-hidden />
+              Change password
             </Button>
             <Button
               type="button"
