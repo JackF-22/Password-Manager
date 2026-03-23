@@ -60,42 +60,64 @@ export function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setFeedback(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-    if (error) {
-      setFeedback({ text: error.message, tone: "error" });
-      return;
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        setFeedback({ text: error.message, tone: "error" });
+        return;
+      }
+      router.push("/vault");
+      router.refresh();
+    } catch (err) {
+      setFeedback({
+        text:
+          err instanceof Error
+            ? err.message
+            : "Could not sign in. Check environment settings and try again.",
+        tone: "error",
+      });
+    } finally {
+      setLoading(false);
     }
-    router.push("/vault");
-    router.refresh();
   }
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setFeedback(null);
-    const supabase = createClient();
-    const origin = window.location.origin;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-      },
-    });
-    setLoading(false);
-    if (error) {
-      setFeedback({ text: error.message, tone: "error" });
-      return;
+    try {
+      const supabase = createClient();
+      const origin = window.location.origin;
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${origin}/auth/callback`,
+        },
+      });
+      if (error) {
+        setFeedback({ text: error.message, tone: "error" });
+        return;
+      }
+      setFeedback({
+        text: "Check your email to confirm your account, or sign in if confirmations are disabled.",
+        tone: "info",
+      });
+    } catch (err) {
+      setFeedback({
+        text:
+          err instanceof Error
+            ? err.message
+            : "Could not create account. Check environment settings and try again.",
+        tone: "error",
+      });
+    } finally {
+      setLoading(false);
     }
-    setFeedback({
-      text: "Check your email to confirm your account, or sign in if confirmations are disabled.",
-      tone: "info",
-    });
   }
 
   return (
