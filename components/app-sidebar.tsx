@@ -1,48 +1,48 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { KeyRound, Shield, Star, Trash2 } from "lucide-react";
-
-const navItems = [
-  { href: "/", label: "All Passwords", icon: KeyRound },
-  { href: "/favorites", label: "Favorites", icon: Star },
-  { href: "/trash", label: "Trash", icon: Trash2 },
-] as const;
+import { Lock, LogOut, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { VaultNavLinks } from "@/components/vault/vault-nav-links";
+import { useLockVault } from "@/hooks/use-lock-vault";
+import { useSignOutVault } from "@/hooks/use-sign-out-vault";
 
 export function AppSidebar() {
-  const pathname = usePathname();
+  const lockVault = useLockVault();
+  const signOutVault = useSignOutVault();
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-zinc-200 bg-zinc-50/90 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/90">
-      <div className="flex h-14 items-center gap-2 border-b border-zinc-200 px-4 dark:border-zinc-800">
-        <Shield
-          className="size-5 text-zinc-700 dark:text-zinc-300"
-          aria-hidden
-        />
-        <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+    <aside className="hidden min-h-dvh w-64 shrink-0 flex-col border-r border-slate-300/80 bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200/95 backdrop-blur-sm dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 lg:flex">
+      <div className="flex min-h-[3.75rem] items-center gap-3 border-b border-slate-300/80 px-5 py-4 dark:border-slate-800">
+        <div className="flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-md dark:from-slate-800 dark:to-black">
+          <Shield className="size-5" aria-hidden />
+        </div>
+        <span className="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           Password Vault
         </span>
       </div>
-      <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="Main">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href;
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={
-                active
-                  ? "flex items-center gap-2 rounded-md bg-zinc-200/90 px-3 py-2 text-sm font-medium text-zinc-900 dark:bg-zinc-800/90 dark:text-zinc-50"
-                  : "flex items-center gap-2 rounded-md px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
-              }
-            >
-              <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
+      <div className="flex flex-1 flex-col px-3 py-4">
+        <VaultNavLinks />
+      </div>
+      <div className="flex flex-col gap-2 border-t border-slate-300/80 px-3 py-4 dark:border-slate-800">
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 w-full justify-start gap-2 text-base text-slate-800 hover:bg-slate-300/50 dark:text-slate-200 dark:hover:bg-slate-800/80"
+          onClick={() => lockVault()}
+        >
+          <Lock className="size-5 shrink-0" aria-hidden />
+          Lock vault
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 w-full justify-start gap-2 text-base text-slate-600 hover:bg-slate-300/50 dark:text-slate-400 dark:hover:bg-slate-800/80"
+          onClick={() => void signOutVault()}
+        >
+          <LogOut className="size-5 shrink-0" aria-hidden />
+          Sign out
+        </Button>
+      </div>
     </aside>
   );
 }

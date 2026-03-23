@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { AppSidebar } from "@/components/app-sidebar";
+import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const dmSans = DM_Sans({
   subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,13 +27,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${jetbrainsMono.variable} min-h-dvh w-full antialiased`}
     >
-      <body className="flex min-h-full bg-background font-sans text-foreground">
-        <AppSidebar />
-        <div className="flex min-h-full min-w-0 flex-1 flex-col">
-          {children}
-        </div>
+      <body
+        className="flex min-h-dvh w-full min-w-0 flex-row bg-background font-sans text-foreground"
+        suppressHydrationWarning
+      >
+        {children}
       </body>
     </html>
   );

@@ -1,13 +1,19 @@
-export default function Home() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        All Passwords
-      </h1>
-      <p className="mt-2 max-w-lg text-sm text-zinc-600 dark:text-zinc-400">
-        Your saved credentials will be listed here. Connect the vault API and
-        UI to start storing entries securely.
-      </p>
-    </div>
-  );
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    redirect("/login");
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  redirect(user ? "/vault" : "/login");
 }
