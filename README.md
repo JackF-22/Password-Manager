@@ -1,5 +1,7 @@
 # Password Vault
 
+DISCLAIMER: This does not guarantee the security of any passwords or sensitive information. If you utilize this tool, do so at your own risk.
+
 A modern password manager built with Next.js and Supabase.
 
 Live site: [https://mypasswordvault.netlify.app](https://mypasswordvault.netlify.app)
