@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Password Vault
 
-## Getting Started
+A modern password manager built with Next.js and Supabase.
 
-First, run the development server:
+Live site: [https://mypasswordvault.netlify.app](https://mypasswordvault.netlify.app)
+
+## Highlights
+
+- Authenticated vault experience powered by Supabase Auth
+- Client-side encryption workflow before secrets are persisted
+- Vault organization with All Passwords, Favorites, Trash, and Generate tabs
+- Strong password generation with configurable options:
+  - Length slider (8-24)
+  - Uppercase, lowercase, numbers, and special character toggles
+- Search and filtering by site, username, or email
+- Responsive UI optimized for desktop sidebar and mobile navigation
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org) (App Router)
+- [React](https://react.dev)
+- [TypeScript](https://www.typescriptlang.org)
+- [Supabase](https://supabase.com) (Auth + Postgres)
+- [Tailwind CSS](https://tailwindcss.com)
+
+## Local Development
+
+### 1) Install dependencies
+
+```bash
+npm install
+```
+
+### 2) Configure environment variables
+
+Create `.env.local` in the project root:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 3) Run the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Netlify Deployment
 
-To learn more about Next.js, take a look at the following resources:
+This project is configured to deploy on Netlify.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Required Netlify environment variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-## Deploy on Vercel
+### Required Supabase Auth URL settings
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+In Supabase Dashboard -> Authentication -> URL Configuration:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Site URL**: `https://mypasswordvault.netlify.app`
+- **Additional Redirect URLs**:
+  - `https://mypasswordvault.netlify.app/auth/callback`
+
+These settings are required for production sign-in and sign-up callback flows.
+
+## Project Structure
+
+```text
+app/                  # App Router pages and routes
+components/           # UI and feature components
+lib/                  # Supabase, crypto, and shared utilities
+hooks/                # Vault interaction hooks
+supabase/             # SQL setup and migrations
+```
+
+## Security Notes
+
+- Vault entries are encrypted client-side before being saved.
+- Do not commit `.env.local` or any secret values.
+- Use HTTPS in production (Netlify provides this by default).
