@@ -93,6 +93,9 @@ export function VaultDashboard({ mode = "all" }: Props) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [clipboardActive, setClipboardActive] = useState(false);
   const [copyingId, setCopyingId] = useState<string | null>(null);
+  const [manualCopyOpen, setManualCopyOpen] = useState(false);
+  const [manualCopyValue, setManualCopyValue] = useState("");
+  const [manualCopyLabel, setManualCopyLabel] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const clipboardUiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -211,7 +214,38 @@ export function VaultDashboard({ mode = "all" }: Props) {
         row.iv,
         key,
       );
-      await navigator.clipboard.writeText(plain);
+      let copied = false;
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(plain);
+          copied = true;
+        } catch {
+          copied = false;
+        }
+      }
+
+      if (!copied) {
+        const textarea = document.createElement("textarea");
+        textarea.value = plain;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        copied = document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      if (!copied) {
+        setManualCopyValue(plain);
+        setManualCopyLabel(row.site_name);
+        setManualCopyOpen(true);
+        setActionError(
+          "Password decrypted, but this browser blocked clipboard access. Use the manual copy sheet.",
+        );
+        return;
+      }
+
       scheduleClipboardClear(30_000);
 
       if (clipboardUiTimerRef.current) {
@@ -228,6 +262,32 @@ export function VaultDashboard({ mode = "all" }: Props) {
       );
     } finally {
       setCopyingId(null);
+    }
+  }
+
+  async function handleManualCopy() {
+    if (!manualCopyValue) return;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(manualCopyValue);
+      } else {
+        throw new Error("Clipboard API unavailable");
+      }
+      scheduleClipboardClear(30_000);
+      setClipboardActive(true);
+      if (clipboardUiTimerRef.current) {
+        clearTimeout(clipboardUiTimerRef.current);
+      }
+      clipboardUiTimerRef.current = setTimeout(() => {
+        setClipboardActive(false);
+        clipboardUiTimerRef.current = null;
+      }, 30_000);
+      setActionError(null);
+      setManualCopyOpen(false);
+    } catch {
+      setActionError(
+        "This device still blocked clipboard access. Press and hold the password text, then copy manually.",
+      );
     }
   }
 
@@ -601,6 +661,64 @@ export function VaultDashboard({ mode = "all" }: Props) {
                 </Button>
               </div>
             </form>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={manualCopyOpen}
+        onOpenChange={(open) => {
+          setManualCopyOpen(open);
+          if (!open) {
+            setManualCopyValue("");
+            setManualCopyLabel("");
+          }
+        }}
+      >
+        <DialogContent
+          className="max-w-md border-slate-300/80 p-0 dark:border-slate-700"
+          showCloseButton
+        >
+          <div className="space-y-4 bg-gradient-to-b from-slate-50 to-slate-200/40 p-4 sm:p-6 dark:from-slate-950 dark:to-slate-900">
+            <DialogHeader className="text-left">
+              <DialogTitle className="text-slate-900 dark:text-slate-100">
+                Manual copy
+              </DialogTitle>
+              <DialogDescription>
+                Clipboard is blocked on this device. Press and hold the password
+                text to copy it manually.
+                {manualCopyLabel ? ` (${manualCopyLabel})` : ""}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-2">
+              <Label htmlFor="manual-copy-password">Password</Label>
+              <textarea
+                id="manual-copy-password"
+                value={manualCopyValue}
+                readOnly
+                rows={3}
+                onFocus={(e) => e.currentTarget.select()}
+                className="w-full rounded-lg border border-slate-300/80 bg-white/95 p-3 font-mono text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-900/90 dark:text-slate-100"
+              />
+            </div>
+
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setManualCopyOpen(false)}
+              >
+                Close
+              </Button>
+              <Button
+                type="button"
+                className="bg-gradient-to-r from-slate-800 to-slate-950 text-white hover:from-slate-700 hover:to-slate-900"
+                onClick={() => void handleManualCopy()}
+              >
+                Try copy again
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
